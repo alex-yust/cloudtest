@@ -831,7 +831,11 @@ func (ctx *executionContext) startTask(task *testTask, instances []*clusterInsta
 	}
 
 	task.clusterTaskID = makeTaskClusterID(instances)
-	task.test.ArtifactDirectories = append(task.test.ArtifactDirectories, ctx.manager.AddFolder(task.clusterTaskID, task.test.Name))
+
+	artifactDir := ctx.manager.AddFolder(task.clusterTaskID, task.test.Name)
+	task.test.ArtifactDirectories = append(task.test.ArtifactDirectories, artifactDir)
+	task.test.ExecutionConfig.Env = append(task.test.ExecutionConfig.Env, "ARTIFACTS_DIR="+artifactDir)
+
 	fileName, file, err := ctx.manager.OpenFileTest(task.clusterTaskID, task.test.Name, "run")
 	if err != nil {
 		return err

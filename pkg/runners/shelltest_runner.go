@@ -47,7 +47,6 @@ func (runner *shellTestRunner) runCmd(context context.Context, script, env []str
 		}
 
 		cmdEnv := append(runner.envMgr.GetProcessedEnv(), env...)
-		cmdEnv = append(cmdEnv, "ARTIFACTS_DIR="+runner.artifactDir)
 		_, _ = writer.WriteString(fmt.Sprintf(">>>>>>Running: %s:<<<<<<\n", cmd))
 		_ = writer.Flush()
 
@@ -71,14 +70,9 @@ func (runner *shellTestRunner) GetCmdLine() string {
 func NewShellTestRunner(ids string, test *model.TestEntry) TestRunner {
 	envMgr := shell.NewEnvironmentManager()
 	_ = envMgr.ProcessEnvironment(ids, "shellrun", os.TempDir(), test.ExecutionConfig.Env, map[string]string{})
-	artifactDir := ""
-	if len(test.ArtifactDirectories) > 0 {
-		artifactDir = test.ArtifactDirectories[len(test.ArtifactDirectories)-1]
-	}
 	return &shellTestRunner{
 		id:          ids,
 		test:        test,
 		envMgr:      envMgr,
-		artifactDir: artifactDir,
 	}
 }
